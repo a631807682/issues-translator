@@ -1,0 +1,19 @@
+name: 'build-test'
+on: 
+  issue_comment: 
+    types: [created]
+  issues: 
+    types: [opened]
+
+jobs:
+  test: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} 
+          modify-title: true
+          modify-comment: true
+          comment-note: Bot detected the issue body's language is not English, translate it automatically.
+          

@@ -82,11 +82,7 @@ async function translateComment(
     owner,
     repo,
     issue_number: issueNumber,
-    body: `
-    > ${note}
-    ----
-    ${targetComment}
-    `
+    body: commentTemplate(note, targetComment)
   })
 
   core.info(`create issue comment status:${res.status}`)
@@ -119,4 +115,12 @@ async function translateTitle(
   })
 
   core.info(`change issue title status:${res.status}`)
+}
+
+function commentTemplate(note: string, comment: string): string {
+  return `
+> ${note}
+
+${comment}
+    `
 }

@@ -86,11 +86,7 @@ function translateComment(owner, repo, token, note, issueNumber, originComment) 
             owner,
             repo,
             issue_number: issueNumber,
-            body: `
-    > ${note}
-    ----
-    ${targetComment}
-    `
+            body: commentTemplate(note, targetComment)
         });
         core.info(`create issue comment status:${res.status}`);
     });
@@ -114,6 +110,13 @@ function translateTitle(owner, repo, token, issueNumber, originTitle) {
         });
         core.info(`change issue title status:${res.status}`);
     });
+}
+function commentTemplate(note, comment) {
+    return `
+> ${note}
+
+${comment}
+    `;
 }
 
 

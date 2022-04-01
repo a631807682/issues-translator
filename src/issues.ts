@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {EventType, Option} from './parse'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
@@ -30,17 +31,20 @@ async function translateComment(token: string): Promise<void> {
   }
 
   const targetComment = await translate2English(originComment)
+  core.info(`translate issues comment: ${targetComment}`)
 
   const octokit = new Octokit({
     auth: token
   })
 
-  await octokit.issues.createComment({
+  const res = await octokit.issues.createComment({
     owner,
     repo,
     issue_number: issueNumber,
     body: targetComment
   })
+
+  core.info(`create issue comment status:${res.status}`)
 }
 
 async function translateTitle(token: string): Promise<void> {
@@ -55,15 +59,18 @@ async function translateTitle(token: string): Promise<void> {
   }
 
   const targetTitle = await translate2English(originTitle)
+  core.info(`translate issues title: ${targetTitle}`)
 
   const octokit = new Octokit({
     auth: token
   })
 
-  await octokit.issues.update({
+  const res = await octokit.issues.update({
     owner,
     repo,
     issue_number: issueNumber,
     targetTitle
   })
+
+  core.info(`change issue title status:${res.status}`)
 }

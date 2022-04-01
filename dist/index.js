@@ -36,6 +36,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.translateIssue = void 0;
+const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const parse_1 = __nccwpck_require__(5223);
 const translate_1 = __nccwpck_require__(885);
@@ -67,15 +68,17 @@ function translateComment(token) {
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment);
+        core.info(`translate issues comment: ${targetComment}`);
         const octokit = new rest_1.Octokit({
             auth: token
         });
-        yield octokit.issues.createComment({
+        const res = yield octokit.issues.createComment({
             owner,
             repo,
             issue_number: issueNumber,
             body: targetComment
         });
+        core.info(`create issue comment status:${res.status}`);
     });
 }
 function translateTitle(token) {
@@ -89,15 +92,17 @@ function translateTitle(token) {
             return;
         }
         const targetTitle = yield (0, translate_1.translate2English)(originTitle);
+        core.info(`translate issues title: ${targetTitle}`);
         const octokit = new rest_1.Octokit({
             auth: token
         });
-        yield octokit.issues.update({
+        const res = yield octokit.issues.update({
             owner,
             repo,
             issue_number: issueNumber,
             targetTitle
         });
+        core.info(`change issue title status:${res.status}`);
     });
 }
 

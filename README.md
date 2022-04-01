@@ -4,6 +4,11 @@
 
 > translate issues to English
 
+## Desc
+
+Different from this project [issues-translate-action](https://github.com/usthe/issues-translate-action)
+The project does not try to guess user's language, because `Issues` usually contain multiple languages, and the project determines whether translation is required by `match-languages` which user config.
+
 ## Usage
 
 ```yaml

@@ -3,7 +3,7 @@
 ## Usage
 
 ```yaml
-name: 'issue-translator'
+name: 'issues-translator'
 on:
   issue_comment:
     types: [created]
@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: a631807682/issue-translate@v1.0.0
+      - uses: a631807682/issues-translator@v1.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           modify-title: true

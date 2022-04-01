@@ -19,6 +19,7 @@ jobs:
       - uses: a631807682/issues-translator@v1.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          match-languages: cmn,rus
           modify-title: true
           modify-comment: true
           comment-note: Bot detected the issue body's language is not English, translate it automatically.

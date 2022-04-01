@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {EventType, Option} from './parse'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
-import {containsChinese, translate2English} from './translate'
+import {containsLanguages, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
 
 export async function translateIssue(t: EventType, opt: Option): Promise<void> {
@@ -21,6 +21,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
         repo,
         opt.GithubToken,
         opt.CommentNote,
+        opt.MatchLanguages,
         issueNumber,
         originComment
       )
@@ -35,6 +36,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
         owner,
         repo,
         opt.GithubToken,
+        opt.MatchLanguages,
         issueNumber,
         originTitle
       )
@@ -50,6 +52,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
       repo,
       opt.GithubToken,
       opt.CommentNote,
+      opt.MatchLanguages,
       issueNumber,
       originComment
     )
@@ -61,11 +64,12 @@ async function translateComment(
   repo: string,
   token: string,
   note: string,
+  matchLanguages: string[],
   issueNumber: number,
   originComment: string | null
 ): Promise<void> {
   // chinese less than than 20%
-  if (!containsChinese(originComment, 0.2)) {
+  if (!containsLanguages(originComment, matchLanguages, 0.2)) {
     return
   }
 
@@ -92,11 +96,12 @@ async function translateTitle(
   owner: string,
   repo: string,
   token: string,
+  matchLanguages: string[],
   issueNumber: number,
   originTitle: string
 ): Promise<void> {
   // has chiness
-  if (!containsChinese(originTitle, 0)) {
+  if (!containsLanguages(originTitle, matchLanguages, 0)) {
     return
   }
 

@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {EventType, getActionType, getOption} from './parse'
+import {exculdeLanguage} from './language'
 import {translateIssue} from './issues'
 
 async function run(): Promise<void> {
@@ -13,6 +14,11 @@ async function run(): Promise<void> {
     }
 
     const opt = getOption()
+    if (opt.MatchLanguages.includes(exculdeLanguage)) {
+      core.setFailed(
+        `Not support ${exculdeLanguage} language which should be translate to`
+      )
+    }
     return await translateIssue(t, opt)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

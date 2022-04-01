@@ -1,6 +1,7 @@
 /* eslint-disable no-shadow */
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {defaultLanguage} from './language'
 
 function isTrue(val: string): boolean {
   return val === 'true'
@@ -18,6 +19,7 @@ export type Option = {
   ModifyCommentSwitch: boolean
   CommentNote: string
   GithubToken: string
+  MatchLanguages: string[]
 }
 
 export function getOption(): Option {
@@ -25,7 +27,16 @@ export function getOption(): Option {
     ModifyTitleSwitch: isTrue(core.getInput('modify-title')),
     ModifyCommentSwitch: isTrue(core.getInput('modify-comment')),
     CommentNote: core.getInput('comment-note'),
-    GithubToken: core.getInput('github-token', {required: true})
+    GithubToken: core.getInput('github-token', {required: true}),
+    MatchLanguages: []
+  }
+
+  const matchLanguages = core.getInput('match-languages')
+  if (matchLanguages === '') {
+    opt.MatchLanguages = [defaultLanguage]
+  } else {
+    const lgs = matchLanguages.split(',')
+    opt.MatchLanguages = lgs.map(d => d.trim())
   }
   return opt
 }

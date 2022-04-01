@@ -1,6 +1,9 @@
 name: 'Issues Match Lanuages Translator'
 description: 'The action for translate match lanuages issues content to English.'
 author: 'a631807682'
+branding:
+  icon: 'book-open'
+  color: 'blue'
 inputs:
   github-token:
     required: true

@@ -1,11 +1,27 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Issues Translator'
+description: 'The action for translate match lanuages issues content to English.'
+author: 'a631807682'
 inputs:
-  github-token: # change this
+  github-token:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Action identity GITHUB_TOKEN'
+  match-languages:
+    required: false
+    description: 'Match languages which will be translate'
+    default: 'cmn'
+  modify-title:
+    required: false
+    description: 'Should modify issue title'
+    default: 'false'
+  modify-comment:
+    required: false
+    description: 'Should create comment to translate'
+    default: 'false'
+  comment-note:
+    required: false
+    description: 'Bot reply template content'
+    default: ''
 runs:
   using: 'node16'
   main: 'dist/index.js'
+

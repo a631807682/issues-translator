@@ -78,7 +78,7 @@ function translateComment(token, note) {
             issue_number: issueNumber,
             body: `
     > ${note}
-    
+    ----
     ${targetComment}
     `
         });
@@ -104,7 +104,7 @@ function translateTitle(token) {
             owner,
             repo,
             issue_number: issueNumber,
-            targetTitle
+            title: targetTitle
         });
         core.info(`change issue title status:${res.status}`);
     });

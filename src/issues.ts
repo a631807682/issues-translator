@@ -45,7 +45,7 @@ async function translateComment(token: string, note: string): Promise<void> {
     issue_number: issueNumber,
     body: `
     > ${note}
-    
+    ----
     ${targetComment}
     `
   })
@@ -75,7 +75,7 @@ async function translateTitle(token: string): Promise<void> {
     owner,
     repo,
     issue_number: issueNumber,
-    targetTitle
+    title: targetTitle
   })
 
   core.info(`change issue title status:${res.status}`)

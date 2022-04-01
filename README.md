@@ -1,4 +1,6 @@
-# issue-translate
+# issues-translator
+
+> trnaslate issues to English
 
 ## Usage
 

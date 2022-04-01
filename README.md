@@ -1,5 +1,7 @@
 # issues-translator
 
+[![build-test](https://github.com/a631807682/issues-translator/workflows/build-test/badge.svg?branch=main 'test status')](https://github.com/a631807682/issues-translator/actions)
+
 > translate issues to English
 
 ## Usage

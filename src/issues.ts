@@ -8,18 +8,18 @@ import {Octokit} from '@octokit/rest'
 export async function translateIssue(t: EventType, opt: Option): Promise<void> {
   if (t === EventType.IssueOpened) {
     if (opt.ModifyCommentSwitch) {
-      await translateComment(opt.GithubToken)
+      await translateComment(opt.GithubToken, opt.CommentNote)
     }
 
     if (opt.ModifyTitleSwitch) {
       await translateTitle(opt.GithubToken)
     }
   } else if (opt.ModifyCommentSwitch) {
-    await translateComment(opt.GithubToken)
+    await translateComment(opt.GithubToken, opt.CommentNote)
   }
 }
 
-async function translateComment(token: string): Promise<void> {
+async function translateComment(token: string, note: string): Promise<void> {
   const {owner, repo} = github.context.repo
   const issueCommentPayload = github.context.payload as IssueCommentEvent
   const issueNumber = issueCommentPayload.issue.number
@@ -31,7 +31,9 @@ async function translateComment(token: string): Promise<void> {
   }
 
   const targetComment = await translate2English(originComment)
-  core.info(`translate issues comment: ${targetComment}`)
+  core.info(
+    `translate issues comment: ${targetComment} origin: ${originComment}`
+  )
 
   const octokit = new Octokit({
     auth: token
@@ -41,7 +43,11 @@ async function translateComment(token: string): Promise<void> {
     owner,
     repo,
     issue_number: issueNumber,
-    body: targetComment
+    body: `
+    > ${note}
+    
+    ${targetComment}
+    `
   })
 
   core.info(`create issue comment status:${res.status}`)
@@ -59,7 +65,7 @@ async function translateTitle(token: string): Promise<void> {
   }
 
   const targetTitle = await translate2English(originTitle)
-  core.info(`translate issues title: ${targetTitle}`)
+  core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`)
 
   const octokit = new Octokit({
     auth: token

@@ -45,19 +45,19 @@ function translateIssue(t, opt) {
     return __awaiter(this, void 0, void 0, function* () {
         if (t === parse_1.EventType.IssueOpened) {
             if (opt.ModifyCommentSwitch) {
-                yield translateComment(opt.GithubToken);
+                yield translateComment(opt.GithubToken, opt.CommentNote);
             }
             if (opt.ModifyTitleSwitch) {
                 yield translateTitle(opt.GithubToken);
             }
         }
         else if (opt.ModifyCommentSwitch) {
-            yield translateComment(opt.GithubToken);
+            yield translateComment(opt.GithubToken, opt.CommentNote);
         }
     });
 }
 exports.translateIssue = translateIssue;
-function translateComment(token) {
+function translateComment(token, note) {
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
         const issueCommentPayload = github.context.payload;
@@ -68,7 +68,7 @@ function translateComment(token) {
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment);
-        core.info(`translate issues comment: ${targetComment}`);
+        core.info(`translate issues comment: ${targetComment} origin: ${originComment}`);
         const octokit = new rest_1.Octokit({
             auth: token
         });
@@ -76,7 +76,11 @@ function translateComment(token) {
             owner,
             repo,
             issue_number: issueNumber,
-            body: targetComment
+            body: `
+    > ${note}
+    
+    ${targetComment}
+    `
         });
         core.info(`create issue comment status:${res.status}`);
     });
@@ -92,7 +96,7 @@ function translateTitle(token) {
             return;
         }
         const targetTitle = yield (0, translate_1.translate2English)(originTitle);
-        core.info(`translate issues title: ${targetTitle}`);
+        core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`);
         const octokit = new rest_1.Octokit({
             auth: token
         });

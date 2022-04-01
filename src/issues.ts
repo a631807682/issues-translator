@@ -118,6 +118,10 @@ async function translateTitle(
 }
 
 function commentTemplate(note: string, comment: string): string {
+  if (note === '') {
+    return comment
+  }
+
   return `
 > ${note}
 

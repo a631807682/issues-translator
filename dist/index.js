@@ -112,6 +112,9 @@ function translateTitle(owner, repo, token, issueNumber, originTitle) {
     });
 }
 function commentTemplate(note, comment) {
+    if (note === '') {
+        return comment;
+    }
     return `
 > ${note}
 

@@ -6,25 +6,64 @@ import {containsChinese, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
 
 export async function translateIssue(t: EventType, opt: Option): Promise<void> {
+  core.info(`translateIssue event type: ${t}`)
+  const {owner, repo} = github.context.repo
+
   if (t === EventType.IssueOpened) {
     if (opt.ModifyCommentSwitch) {
-      await translateComment(opt.GithubToken, opt.CommentNote)
+      // translate issue body
+      const issueCommentPayload = github.context.payload as IssueCommentEvent
+      const issueNumber = issueCommentPayload.issue.number
+      const originComment = issueCommentPayload.issue.body
+
+      await translateComment(
+        owner,
+        repo,
+        opt.GithubToken,
+        opt.CommentNote,
+        issueNumber,
+        originComment
+      )
     }
 
     if (opt.ModifyTitleSwitch) {
-      await translateTitle(opt.GithubToken)
+      // translate issue title
+      const issuePayload = github.context.payload as IssuesEvent
+      const issueNumber = issuePayload.issue.number
+      const originTitle = issuePayload.issue.title
+      await translateTitle(
+        owner,
+        repo,
+        opt.GithubToken,
+        issueNumber,
+        originTitle
+      )
     }
   } else if (opt.ModifyCommentSwitch) {
-    await translateComment(opt.GithubToken, opt.CommentNote)
+    // translate issue comment body
+    const issueCommentPayload = github.context.payload as IssueCommentEvent
+    const issueNumber = issueCommentPayload.issue.number
+    const originComment = issueCommentPayload.comment.body
+
+    await translateComment(
+      owner,
+      repo,
+      opt.GithubToken,
+      opt.CommentNote,
+      issueNumber,
+      originComment
+    )
   }
 }
 
-async function translateComment(token: string, note: string): Promise<void> {
-  const {owner, repo} = github.context.repo
-  const issueCommentPayload = github.context.payload as IssueCommentEvent
-  const issueNumber = issueCommentPayload.issue.number
-  const originComment = issueCommentPayload.issue.body
-
+async function translateComment(
+  owner: string,
+  repo: string,
+  token: string,
+  note: string,
+  issueNumber: number,
+  originComment: string | null
+): Promise<void> {
   // chinese less than than 20%
   if (!containsChinese(originComment, 0.2)) {
     return
@@ -53,12 +92,13 @@ async function translateComment(token: string, note: string): Promise<void> {
   core.info(`create issue comment status:${res.status}`)
 }
 
-async function translateTitle(token: string): Promise<void> {
-  const {owner, repo} = github.context.repo
-  const issuePayload = github.context.payload as IssuesEvent
-  const issueNumber = issuePayload.issue.number
-  const originTitle = issuePayload.issue.title
-
+async function translateTitle(
+  owner: string,
+  repo: string,
+  token: string,
+  issueNumber: number,
+  originTitle: string
+): Promise<void> {
   // has chiness
   if (!containsChinese(originTitle, 0)) {
     return

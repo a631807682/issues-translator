@@ -43,26 +43,36 @@ const translate_1 = __nccwpck_require__(885);
 const rest_1 = __nccwpck_require__(5375);
 function translateIssue(t, opt) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info(`translateIssue event type: ${t}`);
+        const { owner, repo } = github.context.repo;
         if (t === parse_1.EventType.IssueOpened) {
             if (opt.ModifyCommentSwitch) {
-                yield translateComment(opt.GithubToken, opt.CommentNote);
+                // translate issue body
+                const issueCommentPayload = github.context.payload;
+                const issueNumber = issueCommentPayload.issue.number;
+                const originComment = issueCommentPayload.issue.body;
+                yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, issueNumber, originComment);
             }
             if (opt.ModifyTitleSwitch) {
-                yield translateTitle(opt.GithubToken);
+                // translate issue title
+                const issuePayload = github.context.payload;
+                const issueNumber = issuePayload.issue.number;
+                const originTitle = issuePayload.issue.title;
+                yield translateTitle(owner, repo, opt.GithubToken, issueNumber, originTitle);
             }
         }
         else if (opt.ModifyCommentSwitch) {
-            yield translateComment(opt.GithubToken, opt.CommentNote);
+            // translate issue comment body
+            const issueCommentPayload = github.context.payload;
+            const issueNumber = issueCommentPayload.issue.number;
+            const originComment = issueCommentPayload.comment.body;
+            yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, issueNumber, originComment);
         }
     });
 }
 exports.translateIssue = translateIssue;
-function translateComment(token, note) {
+function translateComment(owner, repo, token, note, issueNumber, originComment) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { owner, repo } = github.context.repo;
-        const issueCommentPayload = github.context.payload;
-        const issueNumber = issueCommentPayload.issue.number;
-        const originComment = issueCommentPayload.issue.body;
         // chinese less than than 20%
         if (!(0, translate_1.containsChinese)(originComment, 0.2)) {
             return;
@@ -85,12 +95,8 @@ function translateComment(token, note) {
         core.info(`create issue comment status:${res.status}`);
     });
 }
-function translateTitle(token) {
+function translateTitle(owner, repo, token, issueNumber, originTitle) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { owner, repo } = github.context.repo;
-        const issuePayload = github.context.payload;
-        const issueNumber = issuePayload.issue.number;
-        const originTitle = issuePayload.issue.title;
         // has chiness
         if (!(0, translate_1.containsChinese)(originTitle, 0)) {
             return;

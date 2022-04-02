@@ -16,5 +16,5 @@ export function cleanAnnotation(s: string): string {
 }
 
 export function cleanCode(s: string): string {
-  return s.replace(/^```(\s|[a-zA-Z]*)\n([\s\S]*?)```$/gm, '')
+  return s.replace(/^```(\s|[a-zA-Z]*)\n([\s\S]*?)```(\s*)$/gm, '')
 }

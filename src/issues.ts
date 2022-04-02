@@ -10,7 +10,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
   const {owner, repo} = github.context.repo
 
   if (t === EventType.IssueOpened) {
-    if (opt.ModifyCommentSwitch) {
+    if (opt.ModifyBodySwitch) {
       // translate issue body
       const issueCommentPayload = github.context.payload as IssueCommentEvent
       const issueNumber = issueCommentPayload.issue.number
@@ -78,6 +78,11 @@ async function translateComment(
     `translate issues comment: ${targetComment} origin: ${originComment}`
   )
 
+  // avoid infinite loops
+  if (targetComment === originComment) {
+    return
+  }
+
   const octokit = new Octokit({
     auth: token
   })
@@ -107,6 +112,10 @@ async function translateTitle(
 
   const targetTitle = await translate2English(originTitle)
   core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`)
+  // avoid infinite loops
+  if (targetTitle === originTitle) {
+    return
+  }
 
   const octokit = new Octokit({
     auth: token

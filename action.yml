@@ -16,9 +16,13 @@ inputs:
     required: false
     description: 'Should modify issue title'
     default: 'false'
+  modify-body:
+    required: false
+    description: 'Should create comment to translate body'
+    default: 'false'
   modify-comment:
     required: false
-    description: 'Should create comment to translate'
+    description: 'Should create comment to translate comment'
     default: 'false'
   comment-note:
     required: false

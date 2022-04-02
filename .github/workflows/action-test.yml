@@ -15,6 +15,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} 
           match-languages: cmn,rus
           modify-title: true
+          modify-body: true
           modify-comment: true
           comment-note: Bot detected the issue body's language is not English, translate it automatically.
           

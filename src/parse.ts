@@ -17,6 +17,7 @@ function vailGitActionEvent(event: string, action: string): boolean {
 export type Option = {
   ModifyTitleSwitch: boolean
   ModifyCommentSwitch: boolean
+  ModifyBodySwitch: boolean
   CommentNote: string
   GithubToken: string
   MatchLanguages: string[]
@@ -25,6 +26,7 @@ export type Option = {
 export function getOption(): Option {
   const opt: Option = {
     ModifyTitleSwitch: isTrue(core.getInput('modify-title')),
+    ModifyBodySwitch: isTrue(core.getInput('modify-body')),
     ModifyCommentSwitch: isTrue(core.getInput('modify-comment')),
     CommentNote: core.getInput('comment-note'),
     GithubToken: core.getInput('github-token', {required: true}),

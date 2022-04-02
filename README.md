@@ -23,19 +23,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: a631807682/issues-translator@v1.0.0
+      - uses: a631807682/issues-translator@v1.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           match-languages: cmn,rus
           modify-title: true
+          modify-body: true
           modify-comment: true
           comment-note: Bot detected the issue body's language is not English, translate it automatically.
 ```
 
 1. `match-languages` Match languages which will be translate.
-2. `modify-title` Should modify issue title.
-3. `modify-comment` Should create comment to translate.
-4. `comment-note` Bot reply template content
+2. `modify-title` Should modify issues title.
+3. `modify-body` Should create comment to translate issues body
+4. `modify-comment` Should create comment to translate issues comment.
+5. `comment-note` Bot reply template content
 
 ## Support language
 

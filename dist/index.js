@@ -651,7 +651,7 @@ function containsLanguages(value, matchLanguages, percent) {
                 return true;
             }
             if (count > 0) {
-                core.info(`clean value is\n ${value}`);
+                core.info(`clean value is\n${value}`);
                 core.info(`contains languages ${name} contains percent:${count} less than percent:${percent}`);
             }
         }

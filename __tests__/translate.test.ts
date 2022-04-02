@@ -21,6 +21,31 @@ test('contains language', async () => {
   expect(containsLanguages(en, ['jpn'], 0)).toEqual(false)
 })
 
+test('hybrid contains language', async () => {
+  const hybrid = `
+**Describe the bug**
+不翻译注释和代码
+
+<!--
+To ensure your issue be handled, the issue *MUST* include a GORM Playground Pull Request Link that can reproduce the bug, which is important to help others understand your issue effectively and make sure the issue hasn't been fixed, refer: https://github.com/go-gorm/playground
+
+Without the link, your issue most likely will be IGNORED
+
+CHANGE FOLLOWING URL TO YOUR PLAYGROUND LINK
+-->
+
+\`\`\`go
+//连接数据库gorm.io/gorm
+db, err := gorm.Open(mysql.New(mysql.Config{
+	DriverName: "mysql",
+	DSN:        "root:123456@(127.0.0.1:3306)/gomicro_test?charset=utf8mb4&parseTime=True&loc=Local",
+}))
+\`\`\`
+
+  `
+  expect(containsLanguages(hybrid, ['cmn'], 0.1)).toEqual(true)
+})
+
 test('get language exprs', async () => {
   //support
   expect(getLanguageExpression('cmn')).not.toEqual(null)

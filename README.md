@@ -33,12 +33,8 @@ jobs:
           comment-note: Bot detected the issue body's language is not English, translate it automatically.
 ```
 
-1. `match-languages` Match languages which will be translate.
+1. `match-languages` Match languages which will be translate. [Support language](Language.md)
 2. `modify-title` Should modify issues title.
-3. `modify-body` Should create comment to translate issues body
+3. `modify-body` Should create comment to translate issues body.
 4. `modify-comment` Should create comment to translate issues comment.
 5. `comment-note` Bot reply template content
-
-## Support language
-
-[Support language](Language.md)

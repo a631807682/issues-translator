@@ -45,6 +45,7 @@ const github = __importStar(__nccwpck_require__(1608));
 const parse_1 = __nccwpck_require__(1734);
 const translate_1 = __nccwpck_require__(1836);
 const rest_1 = __nccwpck_require__(4910);
+const markdown_1 = __nccwpck_require__(606);
 function translateIssue(t, opt) {
     return __awaiter(this, void 0, void 0, function* () {
         core.info(`translateIssue event type: ${t}`);
@@ -94,7 +95,7 @@ function translateComment(owner, repo, token, note, matchLanguages, issueNumber,
             owner,
             repo,
             issue_number: issueNumber,
-            body: commentTemplate(note, targetComment)
+            body: (0, markdown_1.commentTemplate)(note, targetComment)
         });
         core.info(`create issue comment status:${res.status}`);
     });
@@ -122,16 +123,6 @@ function translateTitle(owner, repo, token, matchLanguages, issueNumber, originT
         });
         core.info(`change issue title status:${res.status}`);
     });
-}
-function commentTemplate(note, comment) {
-    if (note === '') {
-        return comment;
-    }
-    return `
-> ${note}
-
-${comment}
-    `;
 }
 
 
@@ -473,6 +464,37 @@ run();
 
 /***/ }),
 
+/***/ 606:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.cleanCode = exports.cleanAnnotation = exports.commentTemplate = void 0;
+function commentTemplate(note, comment) {
+    if (note === '') {
+        return comment;
+    }
+    return `
+> ${note}
+
+${comment}
+    `;
+}
+exports.commentTemplate = commentTemplate;
+function cleanAnnotation(s) {
+    // remove markdown comment
+    return s.replace(/<!--[\s\S]*?-->/g, '');
+}
+exports.cleanAnnotation = cleanAnnotation;
+function cleanCode(s) {
+    return s.replace(/^```(\s|[a-zA-Z]*)\n([\s\S]*?)```$/gm, '');
+}
+exports.cleanCode = cleanCode;
+
+
+/***/ }),
+
 /***/ 1734:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -598,12 +620,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.translate2English = exports.containsLanguages = void 0;
 const core = __importStar(__nccwpck_require__(3052));
+const markdown_1 = __nccwpck_require__(606);
 const language_1 = __nccwpck_require__(7751);
 const google_translate_api_1 = __importDefault(__nccwpck_require__(948));
-function cleanMarkdown(s) {
-    // remove markdown comment
-    return s.replace(/<!--[\s\S]*?-->/g, '');
-}
 function getOccurrence(value, expression) {
     const count = value.match(expression);
     return (count ? count.length : 0) / value.length || 0;
@@ -622,10 +641,12 @@ function containsLanguages(value, matchLanguages, percent) {
     if (value === null) {
         return false;
     }
+    value = (0, markdown_1.cleanAnnotation)(value);
+    value = (0, markdown_1.cleanCode)(value);
     for (const name of matchLanguages) {
         const expr = (0, language_1.getLanguageExpression)(name);
         if (expr !== null) {
-            const count = getOccurrence(cleanMarkdown(value), expr);
+            const count = getOccurrence(value, expr);
             if (count > percent) {
                 return true;
             }

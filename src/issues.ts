@@ -4,6 +4,7 @@ import {EventType, Option} from './parse'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
 import {containsLanguages, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
+import {commentTemplate} from './markdown'
 
 export async function translateIssue(t: EventType, opt: Option): Promise<void> {
   core.info(`translateIssue event type: ${t}`)
@@ -129,16 +130,4 @@ async function translateTitle(
   })
 
   core.info(`change issue title status:${res.status}`)
-}
-
-function commentTemplate(note: string, comment: string): string {
-  if (note === '') {
-    return comment
-  }
-
-  return `
-> ${note}
-
-${comment}
-    `
 }

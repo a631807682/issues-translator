@@ -77,8 +77,8 @@ function translateIssue(t, opt) {
 exports.translateIssue = translateIssue;
 function translateComment(owner, repo, token, note, matchLanguages, issueNumber, originComment) {
     return __awaiter(this, void 0, void 0, function* () {
-        // chinese less than than 20%
-        if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, 0.2)) {
+        // languages less than than 10%
+        if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, 0.1)) {
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment);
@@ -101,7 +101,7 @@ function translateComment(owner, repo, token, note, matchLanguages, issueNumber,
 }
 function translateTitle(owner, repo, token, matchLanguages, issueNumber, originTitle) {
     return __awaiter(this, void 0, void 0, function* () {
-        // has chiness
+        // dose not have languages
         if (!(0, translate_1.containsLanguages)(originTitle, matchLanguages, 0)) {
             return;
         }
@@ -628,6 +628,9 @@ function containsLanguages(value, matchLanguages, percent) {
             const count = getOccurrence(cleanMarkdown(value), expr);
             if (count > percent) {
                 return true;
+            }
+            if (count > 0) {
+                core.info(`contains languages ${name} contains percent:${count} less than percent:${percent}`);
             }
         }
         else {

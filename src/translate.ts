@@ -39,6 +39,12 @@ export function containsLanguages(
       if (count > percent) {
         return true
       }
+
+      if (count > 0) {
+        core.info(
+          `contains languages ${name} contains percent:${count} less than percent:${percent}`
+        )
+      }
     } else {
       core.setFailed(`contains languages not support ${name}`)
     }

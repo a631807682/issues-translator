@@ -68,8 +68,8 @@ async function translateComment(
   issueNumber: number,
   originComment: string | null
 ): Promise<void> {
-  // chinese less than than 20%
-  if (!containsLanguages(originComment, matchLanguages, 0.2)) {
+  // languages less than than 10%
+  if (!containsLanguages(originComment, matchLanguages, 0.1)) {
     return
   }
 
@@ -105,7 +105,7 @@ async function translateTitle(
   issueNumber: number,
   originTitle: string
 ): Promise<void> {
-  // has chiness
+  // dose not have languages
   if (!containsLanguages(originTitle, matchLanguages, 0)) {
     return
   }

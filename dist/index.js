@@ -488,7 +488,7 @@ function cleanAnnotation(s) {
 }
 exports.cleanAnnotation = cleanAnnotation;
 function cleanCode(s) {
-    return s.replace(/```(\s|[a-zA-Z]*)\n([\s\S]*?)```(\s*)/g, '');
+    return s.replace(/```(\s|[a-zA-Z]*)\n([\s\S]*?)```/g, '');
 }
 exports.cleanCode = cleanCode;
 

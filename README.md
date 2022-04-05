@@ -40,3 +40,7 @@ jobs:
 4. `modify-body` Should create comment to translate issues body. default is `false`.
 5. `modify-comment` Should create comment to translate issues comment. default is `false`.
 6. `comment-note` Bot reply template content. default is `''`.
+
+## Preview
+
+![sample](sample.jpg)

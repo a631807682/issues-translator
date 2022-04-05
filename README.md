@@ -35,7 +35,7 @@ jobs:
 ```
 
 1. `match-languages` Match languages which will be translate. [Support language](Language.md). default is `cmn`.
-2. `min-match-percent` The percent of match languages needs to be greater than this percent, range is [0 ~ 1). default is `0`.
+2. `min-match-percent` The percent of match languages needs to be greater than this percent, range is [0 ~ 1). default is `0.05`, seems small with 5% Google api cannot translate by auto.
 3. `modify-title` Should modify issues title. default is `false`.
 4. `modify-body` Should create comment to translate issues body. default is `false`.
 5. `modify-comment` Should create comment to translate issues comment. default is `false`.

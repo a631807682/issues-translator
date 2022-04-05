@@ -50,7 +50,7 @@ function getOption() {
         CommentNote: core.getInput('comment-note'),
         GithubToken: core.getInput('github-token', { required: true }),
         MatchLanguages: [],
-        MinMatchPercent: 0
+        MinMatchPercent: 0.05
     };
     const matchLanguages = core.getInput('match-languages');
     if (matchLanguages === '') {
@@ -167,7 +167,11 @@ function translateIssue(t, opt) {
 exports.translateIssue = translateIssue;
 function translateComment(owner, repo, token, note, matchLanguages, minMatchPercent, issueNumber, originComment) {
     return __awaiter(this, void 0, void 0, function* () {
-        // languages less than than 10%
+        if (originComment == null)
+            return;
+        // clean markdown annotation
+        originComment = (0, markdown_1.cleanAnnotation)(originComment);
+        // languages less than than minMatchPercent
         if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, minMatchPercent)) {
             return;
         }
@@ -175,6 +179,7 @@ function translateComment(owner, repo, token, note, matchLanguages, minMatchPerc
         core.info(`translate issues comment: ${targetComment} origin: ${originComment}`);
         // avoid infinite loops
         if (targetComment === originComment) {
+            core.warning(`translate origin target is the same`);
             return;
         }
         const octokit = new rest_1.Octokit({
@@ -199,6 +204,7 @@ function translateTitle(owner, repo, token, matchLanguages, minMatchPercent, iss
         core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`);
         // avoid infinite loops
         if (targetTitle === originTitle) {
+            core.warning(`translate origin target is the same`);
             return;
         }
         const octokit = new rest_1.Octokit({
@@ -627,7 +633,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.translate2English = exports.containsLanguages = void 0;
 const core = __importStar(__nccwpck_require__(3052));
-const markdown_1 = __nccwpck_require__(606);
 const language_1 = __nccwpck_require__(7751);
 const google_translate_api_1 = __importDefault(__nccwpck_require__(948));
 function getOccurrenceCount(value, expression) {
@@ -648,7 +653,6 @@ function containsLanguages(value, matchLanguages, percent) {
     if (value === null) {
         return false;
     }
-    value = (0, markdown_1.cleanAnnotation)(value);
     // english match count
     const enExpr = (0, language_1.getLanguageExpression)(language_1.targetLanguage);
     const enCount = getOccurrenceCount(value, enExpr);

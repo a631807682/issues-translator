@@ -4,7 +4,7 @@ import {EventType, Option} from './args'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
 import {containsLanguages, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
-import {commentTemplate} from './markdown'
+import {commentTemplate, cleanAnnotation} from './markdown'
 
 export async function translateIssue(t: EventType, opt: Option): Promise<void> {
   core.info(`translateIssue event type: ${t}`)
@@ -73,7 +73,11 @@ async function translateComment(
   issueNumber: number,
   originComment: string | null
 ): Promise<void> {
-  // languages less than than 10%
+  if (originComment == null) return
+
+  // clean markdown annotation
+  originComment = cleanAnnotation(originComment)
+  // languages less than than minMatchPercent
   if (!containsLanguages(originComment, matchLanguages, minMatchPercent)) {
     return
   }
@@ -85,6 +89,7 @@ async function translateComment(
 
   // avoid infinite loops
   if (targetComment === originComment) {
+    core.warning(`translate origin target is the same`)
     return
   }
 
@@ -120,6 +125,7 @@ async function translateTitle(
   core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`)
   // avoid infinite loops
   if (targetTitle === originTitle) {
+    core.warning(`translate origin target is the same`)
     return
   }
 

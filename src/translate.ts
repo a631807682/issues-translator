@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import {cleanAnnotation, cleanCode} from './markdown'
 import {getLanguageExpression, targetLanguage} from './language'
 import translate from '@tomsun28/google-translate-api'
 
@@ -26,9 +25,6 @@ export function containsLanguages(
   if (value === null) {
     return false
   }
-
-  value = cleanAnnotation(value)
-
   // english match count
   const enExpr = getLanguageExpression(targetLanguage)
   const enCount = getOccurrenceCount(value, enExpr!)

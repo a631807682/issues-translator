@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: a631807682/issues-translator@v1.3.0
+      - uses: a631807682/issues-translator@v1.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           match-languages: cmn,rus

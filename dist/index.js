@@ -471,7 +471,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.lanGoogleMap = void 0;
 // https://cloud.google.com/translate/docs/languages
 exports.lanGoogleMap = {
-    cmn: 'zh',
+    cmn: 'zh-CN',
     spa: 'es',
     eng: 'en',
     rus: 'ru',

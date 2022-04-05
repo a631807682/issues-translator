@@ -1,6 +1,6 @@
 // https://cloud.google.com/translate/docs/languages
 export const lanGoogleMap: Record<string, string> = {
-  cmn: 'zh',
+  cmn: 'zh-CN',
   spa: 'es',
   eng: 'en',
   rus: 'ru',

@@ -15,7 +15,7 @@ inputs:
   min-match-percent:
     required: false
     description: 'The percent of match languages needs to be greater than this percent'
-    default: '0.05'
+    default: '0'
   modify-title:
     required: false
     description: 'Should modify issue title'

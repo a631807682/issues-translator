@@ -1,3 +1,4 @@
+// TODO: Support for specifying the remaining languages for translation
 // https://cloud.google.com/translate/docs/languages
 export const lanGoogleMap: Record<string, string> = {
   cmn: 'zh-CN',

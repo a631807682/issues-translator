@@ -1,12 +1,11 @@
 import * as core from '@actions/core'
 import {cleanAnnotation, cleanCode} from './markdown'
-import {getLanguageExpression} from './language'
+import {getLanguageExpression, targetLanguage} from './language'
 import translate from '@tomsun28/google-translate-api'
 
-function getOccurrence(value: string, expression: RegExp): number {
+function getOccurrenceCount(value: string, expression: RegExp): number {
   const count = value.match(expression)
-
-  return (count ? count.length : 0) / value.length || 0
+  return count ? count.length : 0
 }
 
 /**
@@ -29,20 +28,27 @@ export function containsLanguages(
   }
 
   value = cleanAnnotation(value)
-  value = cleanCode(value)
 
+  // english match count
+  const enExpr = getLanguageExpression(targetLanguage)
+  const enCount = getOccurrenceCount(value, enExpr!)
+
+  // language match count
   for (const name of matchLanguages) {
     const expr = getLanguageExpression(name)
     if (expr !== null) {
-      const count = getOccurrence(value, expr)
-      if (count > percent) {
+      const count = getOccurrenceCount(value, expr)
+      const lanPercent =
+        enCount == 0 && count == 0 ? 0 : count / (enCount + count)
+
+      if (lanPercent > percent) {
         return true
       }
 
-      if (count > 0) {
+      if (lanPercent > 0) {
         core.info(`clean value is\n${value}`)
         core.info(
-          `contains languages ${name} contains percent:${count} less than percent:${percent}`
+          `contains languages ${name} contains percent:${lanPercent} less than percent:${percent}`
         )
       }
     } else {

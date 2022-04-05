@@ -371,7 +371,7 @@ exports.expressions = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.exculdeLanguage = exports.defaultLanguage = exports.getLanguageExpression = void 0;
+exports.targetLanguage = exports.defaultLanguage = exports.getLanguageExpression = void 0;
 const data_1 = __nccwpck_require__(1116);
 const expression_1 = __nccwpck_require__(2);
 function getLanguageExpression(name) {
@@ -392,7 +392,7 @@ exports.getLanguageExpression = getLanguageExpression;
 // default is chinese
 exports.defaultLanguage = 'cmn';
 // cannot include english
-exports.exculdeLanguage = 'eng';
+exports.targetLanguage = 'eng';
 
 
 /***/ }),
@@ -448,8 +448,8 @@ function run() {
                 core.setFailed(`The status of the action not allow, receive - ${github.context.payload.action} on ${github.context.eventName}`);
             }
             const opt = (0, parse_1.getOption)();
-            if (opt.MatchLanguages.includes(language_1.exculdeLanguage)) {
-                core.setFailed(`Not support ${language_1.exculdeLanguage} language which should be translate to`);
+            if (opt.MatchLanguages.includes(language_1.targetLanguage)) {
+                core.setFailed(`Not support ${language_1.targetLanguage} language which should be translate to`);
             }
             return yield (0, issues_1.translateIssue)(t, opt);
         }
@@ -623,9 +623,9 @@ const core = __importStar(__nccwpck_require__(3052));
 const markdown_1 = __nccwpck_require__(606);
 const language_1 = __nccwpck_require__(7751);
 const google_translate_api_1 = __importDefault(__nccwpck_require__(948));
-function getOccurrence(value, expression) {
+function getOccurrenceCount(value, expression) {
     const count = value.match(expression);
-    return (count ? count.length : 0) / value.length || 0;
+    return count ? count.length : 0;
 }
 /**
  * Contains Chinese.
@@ -642,17 +642,21 @@ function containsLanguages(value, matchLanguages, percent) {
         return false;
     }
     value = (0, markdown_1.cleanAnnotation)(value);
-    value = (0, markdown_1.cleanCode)(value);
+    // english match count
+    const enExpr = (0, language_1.getLanguageExpression)(language_1.targetLanguage);
+    const enCount = getOccurrenceCount(value, enExpr);
+    // language match count
     for (const name of matchLanguages) {
         const expr = (0, language_1.getLanguageExpression)(name);
         if (expr !== null) {
-            const count = getOccurrence(value, expr);
-            if (count > percent) {
+            const count = getOccurrenceCount(value, expr);
+            const lanPercent = enCount == 0 && count == 0 ? 0 : count / (enCount + count);
+            if (lanPercent > percent) {
                 return true;
             }
-            if (count > 0) {
+            if (lanPercent > 0) {
                 core.info(`clean value is\n${value}`);
-                core.info(`contains languages ${name} contains percent:${count} less than percent:${percent}`);
+                core.info(`contains languages ${name} contains percent:${lanPercent} less than percent:${percent}`);
             }
         }
         else {

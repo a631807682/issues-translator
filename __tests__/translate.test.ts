@@ -35,7 +35,7 @@ CHANGE FOLLOWING URL TO YOUR PLAYGROUND LINK
 -->
 
 \`\`\`go
-//连接数据库gorm.io/gorm
+//这里需要连接数据库gorm.io/gorm
 db, err := gorm.Open(mysql.New(mysql.Config{
 	DriverName: "mysql",
 	DSN:        "root:123456@(127.0.0.1:3306)/gomicro_test?charset=utf8mb4&parseTime=True&loc=Local",
@@ -47,8 +47,8 @@ db, err := gorm.Open(mysql.New(mysql.Config{
   const hybrid2 =
     '**Describe the bug**\n不翻译注释和代码\n```go\n//连接数据库gorm.io/gorm\ndb, err := gorm.Open(mysql.New(mysql.Config{\n	DriverName: "mysql",\n	DSN:        "root:123456@(127.0.0.1:3306)/gomicro_test?charset=utf8mb4&parseTime=True&loc=Local",\n}))\n```\n'
 
-  expect(containsLanguages(hybrid, ['cmn'], 0.1)).toEqual(true)
-  expect(containsLanguages(hybrid2, ['cmn'], 0.1)).toEqual(true)
+  expect(containsLanguages(hybrid, ['cmn'], 0.01)).toEqual(true)
+  expect(containsLanguages(hybrid2, ['cmn'], 0.05)).toEqual(true)
 })
 
 test('get language exprs', async () => {

@@ -20,4 +20,4 @@ export function getLanguageExpression(name: string): RegExp | null {
 // default is chinese
 export const defaultLanguage = 'cmn'
 // cannot include english
-export const exculdeLanguage = 'eng'
+export const targetLanguage = 'eng'

@@ -14,6 +14,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} 
           match-languages: cmn,rus
+          min-match-percent: 0.05
           modify-title: true
           modify-body: true
           modify-comment: true

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {EventType, Option} from './parse'
+import {EventType, Option} from './args'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
 import {containsLanguages, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
@@ -23,6 +23,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
         opt.GithubToken,
         opt.CommentNote,
         opt.MatchLanguages,
+        opt.MinMatchPercent,
         issueNumber,
         originComment
       )
@@ -38,6 +39,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
         repo,
         opt.GithubToken,
         opt.MatchLanguages,
+        opt.MinMatchPercent,
         issueNumber,
         originTitle
       )
@@ -54,6 +56,7 @@ export async function translateIssue(t: EventType, opt: Option): Promise<void> {
       opt.GithubToken,
       opt.CommentNote,
       opt.MatchLanguages,
+      opt.MinMatchPercent,
       issueNumber,
       originComment
     )
@@ -66,11 +69,12 @@ async function translateComment(
   token: string,
   note: string,
   matchLanguages: string[],
+  minMatchPercent: number,
   issueNumber: number,
   originComment: string | null
 ): Promise<void> {
   // languages less than than 10%
-  if (!containsLanguages(originComment, matchLanguages, 0.1)) {
+  if (!containsLanguages(originComment, matchLanguages, minMatchPercent)) {
     return
   }
 
@@ -103,11 +107,12 @@ async function translateTitle(
   repo: string,
   token: string,
   matchLanguages: string[],
+  minMatchPercent: number,
   issueNumber: number,
   originTitle: string
 ): Promise<void> {
   // dose not have languages
-  if (!containsLanguages(originTitle, matchLanguages, 0)) {
+  if (!containsLanguages(originTitle, matchLanguages, minMatchPercent)) {
     return
   }
 

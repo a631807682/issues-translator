@@ -48,7 +48,8 @@ export function containsLanguages(
       if (lanPercent > 0) {
         core.info(`clean value is\n${value}`)
         core.info(
-          `contains languages ${name} contains percent:${lanPercent} less than percent:${percent}`
+          `contains languages ${name} contains percent:${lanPercent} less than percent:${percent}
+           languages ${name} count:${count} english count:${enCount}`
         )
       }
     } else {

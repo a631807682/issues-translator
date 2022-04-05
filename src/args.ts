@@ -21,6 +21,7 @@ export type Option = {
   CommentNote: string
   GithubToken: string
   MatchLanguages: string[]
+  MinMatchPercent: number
 }
 
 export function getOption(): Option {
@@ -30,7 +31,8 @@ export function getOption(): Option {
     ModifyCommentSwitch: isTrue(core.getInput('modify-comment')),
     CommentNote: core.getInput('comment-note'),
     GithubToken: core.getInput('github-token', {required: true}),
-    MatchLanguages: []
+    MatchLanguages: [],
+    MinMatchPercent: 0
   }
 
   const matchLanguages = core.getInput('match-languages')
@@ -40,6 +42,14 @@ export function getOption(): Option {
     const lgs = matchLanguages.split(',')
     opt.MatchLanguages = lgs.map(d => d.trim())
   }
+
+  const minMatchPercent = parseFloat(core.getInput('min-match-percent'))
+  if (!isNaN(minMatchPercent)) {
+    if (minMatchPercent >= 0 && minMatchPercent < 1) {
+      opt.MinMatchPercent = minMatchPercent
+    }
+  }
+
   return opt
 }
 

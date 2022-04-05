@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {EventType, getActionType, getOption} from './parse'
+import {EventType, getActionType, getOption} from './args'
 import {targetLanguage} from './language'
 import {translateIssue} from './issues'
 

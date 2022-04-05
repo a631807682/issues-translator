@@ -1,6 +1,95 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 1676:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getActionType = exports.EventType = exports.getOption = void 0;
+/* eslint-disable no-shadow */
+const core = __importStar(__nccwpck_require__(3052));
+const github = __importStar(__nccwpck_require__(1608));
+const language_1 = __nccwpck_require__(7751);
+function isTrue(val) {
+    return val === 'true';
+}
+function vailGitActionEvent(event, action) {
+    return (github.context.eventName === event &&
+        github.context.payload.action === action);
+}
+function getOption() {
+    const opt = {
+        ModifyTitleSwitch: isTrue(core.getInput('modify-title')),
+        ModifyBodySwitch: isTrue(core.getInput('modify-body')),
+        ModifyCommentSwitch: isTrue(core.getInput('modify-comment')),
+        CommentNote: core.getInput('comment-note'),
+        GithubToken: core.getInput('github-token', { required: true }),
+        MatchLanguages: [],
+        MinMatchPercent: 0
+    };
+    const matchLanguages = core.getInput('match-languages');
+    if (matchLanguages === '') {
+        opt.MatchLanguages = [language_1.defaultLanguage];
+    }
+    else {
+        const lgs = matchLanguages.split(',');
+        opt.MatchLanguages = lgs.map(d => d.trim());
+    }
+    const minMatchPercent = parseFloat(core.getInput('min-match-percent'));
+    if (!isNaN(minMatchPercent)) {
+        if (minMatchPercent >= 0 && minMatchPercent < 1) {
+            opt.MinMatchPercent = minMatchPercent;
+        }
+    }
+    return opt;
+}
+exports.getOption = getOption;
+var EventType;
+(function (EventType) {
+    EventType[EventType["NotAllow"] = 0] = "NotAllow";
+    EventType[EventType["CommentCreated"] = 1] = "CommentCreated";
+    EventType[EventType["IssueOpened"] = 2] = "IssueOpened";
+})(EventType = exports.EventType || (exports.EventType = {}));
+function getActionType() {
+    let t = EventType.NotAllow;
+    if (vailGitActionEvent('issue_comment', 'created')) {
+        t = EventType.CommentCreated;
+    }
+    else if (vailGitActionEvent('issues', 'opened')) {
+        t = EventType.IssueOpened;
+    }
+    return t;
+}
+exports.getActionType = getActionType;
+
+
+/***/ }),
+
 /***/ 6924:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -42,7 +131,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.translateIssue = void 0;
 const core = __importStar(__nccwpck_require__(3052));
 const github = __importStar(__nccwpck_require__(1608));
-const parse_1 = __nccwpck_require__(1734);
+const args_1 = __nccwpck_require__(1676);
 const translate_1 = __nccwpck_require__(1836);
 const rest_1 = __nccwpck_require__(4910);
 const markdown_1 = __nccwpck_require__(606);
@@ -50,20 +139,20 @@ function translateIssue(t, opt) {
     return __awaiter(this, void 0, void 0, function* () {
         core.info(`translateIssue event type: ${t}`);
         const { owner, repo } = github.context.repo;
-        if (t === parse_1.EventType.IssueOpened) {
+        if (t === args_1.EventType.IssueOpened) {
             if (opt.ModifyBodySwitch) {
                 // translate issue body
                 const issueCommentPayload = github.context.payload;
                 const issueNumber = issueCommentPayload.issue.number;
                 const originComment = issueCommentPayload.issue.body;
-                yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, opt.MatchLanguages, issueNumber, originComment);
+                yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, opt.MatchLanguages, opt.MinMatchPercent, issueNumber, originComment);
             }
             if (opt.ModifyTitleSwitch) {
                 // translate issue title
                 const issuePayload = github.context.payload;
                 const issueNumber = issuePayload.issue.number;
                 const originTitle = issuePayload.issue.title;
-                yield translateTitle(owner, repo, opt.GithubToken, opt.MatchLanguages, issueNumber, originTitle);
+                yield translateTitle(owner, repo, opt.GithubToken, opt.MatchLanguages, opt.MinMatchPercent, issueNumber, originTitle);
             }
         }
         else if (opt.ModifyCommentSwitch) {
@@ -71,15 +160,15 @@ function translateIssue(t, opt) {
             const issueCommentPayload = github.context.payload;
             const issueNumber = issueCommentPayload.issue.number;
             const originComment = issueCommentPayload.comment.body;
-            yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, opt.MatchLanguages, issueNumber, originComment);
+            yield translateComment(owner, repo, opt.GithubToken, opt.CommentNote, opt.MatchLanguages, opt.MinMatchPercent, issueNumber, originComment);
         }
     });
 }
 exports.translateIssue = translateIssue;
-function translateComment(owner, repo, token, note, matchLanguages, issueNumber, originComment) {
+function translateComment(owner, repo, token, note, matchLanguages, minMatchPercent, issueNumber, originComment) {
     return __awaiter(this, void 0, void 0, function* () {
         // languages less than than 10%
-        if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, 0.1)) {
+        if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, minMatchPercent)) {
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment);
@@ -100,10 +189,10 @@ function translateComment(owner, repo, token, note, matchLanguages, issueNumber,
         core.info(`create issue comment status:${res.status}`);
     });
 }
-function translateTitle(owner, repo, token, matchLanguages, issueNumber, originTitle) {
+function translateTitle(owner, repo, token, matchLanguages, minMatchPercent, issueNumber, originTitle) {
     return __awaiter(this, void 0, void 0, function* () {
         // dose not have languages
-        if (!(0, translate_1.containsLanguages)(originTitle, matchLanguages, 0)) {
+        if (!(0, translate_1.containsLanguages)(originTitle, matchLanguages, minMatchPercent)) {
             return;
         }
         const targetTitle = yield (0, translate_1.translate2English)(originTitle);
@@ -437,17 +526,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(3052));
 const github = __importStar(__nccwpck_require__(1608));
-const parse_1 = __nccwpck_require__(1734);
+const args_1 = __nccwpck_require__(1676);
 const language_1 = __nccwpck_require__(7751);
 const issues_1 = __nccwpck_require__(6924);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const t = (0, parse_1.getActionType)();
-            if (t === parse_1.EventType.NotAllow) {
+            const t = (0, args_1.getActionType)();
+            if (t === args_1.EventType.NotAllow) {
                 core.setFailed(`The status of the action not allow, receive - ${github.context.payload.action} on ${github.context.eventName}`);
             }
-            const opt = (0, parse_1.getOption)();
+            const opt = (0, args_1.getOption)();
             if (opt.MatchLanguages.includes(language_1.targetLanguage)) {
                 core.setFailed(`Not support ${language_1.targetLanguage} language which should be translate to`);
             }
@@ -491,88 +580,6 @@ function cleanCode(s) {
     return s.replace(/```(\s|[a-zA-Z]*)\n([\s\S]*?)```/g, '');
 }
 exports.cleanCode = cleanCode;
-
-
-/***/ }),
-
-/***/ 1734:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getActionType = exports.EventType = exports.getOption = void 0;
-/* eslint-disable no-shadow */
-const core = __importStar(__nccwpck_require__(3052));
-const github = __importStar(__nccwpck_require__(1608));
-const language_1 = __nccwpck_require__(7751);
-function isTrue(val) {
-    return val === 'true';
-}
-function vailGitActionEvent(event, action) {
-    return (github.context.eventName === event &&
-        github.context.payload.action === action);
-}
-function getOption() {
-    const opt = {
-        ModifyTitleSwitch: isTrue(core.getInput('modify-title')),
-        ModifyBodySwitch: isTrue(core.getInput('modify-body')),
-        ModifyCommentSwitch: isTrue(core.getInput('modify-comment')),
-        CommentNote: core.getInput('comment-note'),
-        GithubToken: core.getInput('github-token', { required: true }),
-        MatchLanguages: []
-    };
-    const matchLanguages = core.getInput('match-languages');
-    if (matchLanguages === '') {
-        opt.MatchLanguages = [language_1.defaultLanguage];
-    }
-    else {
-        const lgs = matchLanguages.split(',');
-        opt.MatchLanguages = lgs.map(d => d.trim());
-    }
-    return opt;
-}
-exports.getOption = getOption;
-var EventType;
-(function (EventType) {
-    EventType[EventType["NotAllow"] = 0] = "NotAllow";
-    EventType[EventType["CommentCreated"] = 1] = "CommentCreated";
-    EventType[EventType["IssueOpened"] = 2] = "IssueOpened";
-})(EventType = exports.EventType || (exports.EventType = {}));
-function getActionType() {
-    let t = EventType.NotAllow;
-    if (vailGitActionEvent('issue_comment', 'created')) {
-        t = EventType.CommentCreated;
-    }
-    else if (vailGitActionEvent('issues', 'opened')) {
-        t = EventType.IssueOpened;
-    }
-    return t;
-}
-exports.getActionType = getActionType;
 
 
 /***/ }),
@@ -656,7 +663,8 @@ function containsLanguages(value, matchLanguages, percent) {
             }
             if (lanPercent > 0) {
                 core.info(`clean value is\n${value}`);
-                core.info(`contains languages ${name} contains percent:${lanPercent} less than percent:${percent}`);
+                core.info(`contains languages ${name} contains percent:${lanPercent} less than percent:${percent}
+           languages ${name} count:${count} english count:${enCount}`);
             }
         }
         else {

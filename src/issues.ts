@@ -88,7 +88,9 @@ async function translateComment(
   }
 
   const targetComment = await translate2English(originComment, lanName)
-  core.info(`translate issues comment: ${targetComment}`)
+  core.info(
+    `translate issues comment language name:${lanName} origin:\n${originComment} target\n:${targetComment}`
+  )
 
   // avoid infinite loops
   if (targetComment === originComment) {

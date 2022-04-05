@@ -177,7 +177,7 @@ function translateComment(owner, repo, token, note, matchLanguages, minMatchPerc
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment, lanName);
-        core.info(`translate issues comment: ${targetComment}`);
+        core.info(`translate issues comment language name:${lanName} origin:\n${originComment} target\n:${targetComment}`);
         // avoid infinite loops
         if (targetComment === originComment) {
             core.warning(`translate origin target is the same`);

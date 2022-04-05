@@ -1,4 +1,4 @@
-import {containsLanguages} from '../src/translate'
+import {containsLanguageName} from '../src/translate'
 import {expect, test} from '@jest/globals'
 import {getLanguageExpression} from '../src/language/index'
 
@@ -9,16 +9,16 @@ test('contains language', async () => {
   const en = 'I need it translated into English'
   const rus = 'мне трэба перакласці на англійскую'
 
-  expect(containsLanguages(cn, ['cmn'], 0)).toEqual(true)
-  expect(containsLanguages(cn, ['jpn'], 0)).toEqual(true)
-  expect(containsLanguages(rus, ['rus'], 0)).toEqual(true)
+  expect(containsLanguageName(cn, ['cmn'], 0)).toEqual('cmn')
+  expect(containsLanguageName(cn, ['jpn'], 0)).toEqual('jpn')
+  expect(containsLanguageName(rus, ['cnm', 'rus'], 0)).toEqual('rus')
 
-  expect(containsLanguages(rus, ['cmn'], 0)).toEqual(false)
-  expect(containsLanguages(cn, ['rus'], 0)).toEqual(false)
-  expect(containsLanguages(cn, ['ben'], 0)).toEqual(false)
-  expect(containsLanguages(cn, ['eng'], 0)).toEqual(false)
-  expect(containsLanguages(en, ['cmn'], 0)).toEqual(false)
-  expect(containsLanguages(en, ['jpn'], 0)).toEqual(false)
+  expect(containsLanguageName(rus, ['cmn'], 0)).toEqual(null)
+  expect(containsLanguageName(cn, ['rus'], 0)).toEqual(null)
+  expect(containsLanguageName(cn, ['ben'], 0)).toEqual(null)
+  expect(containsLanguageName(cn, ['eng'], 0)).toEqual(null)
+  expect(containsLanguageName(en, ['cmn'], 0)).toEqual(null)
+  expect(containsLanguageName(en, ['jpn'], 0)).toEqual(null)
 })
 
 test('hybrid contains language', async () => {
@@ -47,8 +47,8 @@ db, err := gorm.Open(mysql.New(mysql.Config{
   const hybrid2 =
     '**Describe the bug**\n不翻译注释和代码\n```go\n//连接数据库gorm.io/gorm\ndb, err := gorm.Open(mysql.New(mysql.Config{\n	DriverName: "mysql",\n	DSN:        "root:123456@(127.0.0.1:3306)/gomicro_test?charset=utf8mb4&parseTime=True&loc=Local",\n}))\n```\n'
 
-  expect(containsLanguages(hybrid, ['cmn'], 0.05)).toEqual(false)
-  expect(containsLanguages(hybrid2, ['cmn'], 0.05)).toEqual(true)
+  expect(containsLanguageName(hybrid, ['cmn'], 0.05)).toEqual(null)
+  expect(containsLanguageName(hybrid2, ['cmn'], 0.05)).toEqual('cmn')
 })
 
 test('get language exprs', async () => {

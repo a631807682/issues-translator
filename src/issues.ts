@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {EventType, Option} from './args'
 import type {IssueCommentEvent, IssuesEvent} from '@octokit/webhooks-types'
-import {containsLanguages, translate2English} from './translate'
+import {containsLanguageName, translate2English} from './translate'
 import {Octokit} from '@octokit/rest'
 import {commentTemplate, cleanAnnotation} from './markdown'
 
@@ -78,11 +78,16 @@ async function translateComment(
   // clean markdown annotation
   originComment = cleanAnnotation(originComment)
   // languages less than than minMatchPercent
-  if (!containsLanguages(originComment, matchLanguages, minMatchPercent)) {
+  const lanName = containsLanguageName(
+    originComment,
+    matchLanguages,
+    minMatchPercent
+  )
+  if (lanName === null) {
     return
   }
 
-  const targetComment = await translate2English(originComment)
+  const targetComment = await translate2English(originComment, lanName)
   core.info(`translate issues comment: ${targetComment}`)
 
   // avoid infinite loops
@@ -114,12 +119,17 @@ async function translateTitle(
   issueNumber: number,
   originTitle: string
 ): Promise<void> {
+  const lanName = containsLanguageName(
+    originTitle,
+    matchLanguages,
+    minMatchPercent
+  )
   // dose not have languages
-  if (!containsLanguages(originTitle, matchLanguages, minMatchPercent)) {
+  if (lanName === null) {
     return
   }
 
-  const targetTitle = await translate2English(originTitle)
+  const targetTitle = await translate2English(originTitle, lanName)
   core.info(`translate issues title: ${targetTitle}`)
   // avoid infinite loops
   if (targetTitle === originTitle) {

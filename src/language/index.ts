@@ -1,5 +1,6 @@
 import {data} from './data'
 import {expressions} from './expression'
+import {lanGoogleMap} from './g'
 
 export function getLanguageExpression(name: string): RegExp | null {
   if (expressions[name]) {
@@ -21,3 +22,7 @@ export function getLanguageExpression(name: string): RegExp | null {
 export const defaultLanguage = 'cmn'
 // cannot include english
 export const targetLanguage = 'eng'
+
+export function getGoogleFrom(lanName: string): string | undefined {
+  return lanGoogleMap[lanName]
+}

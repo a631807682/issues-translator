@@ -172,10 +172,11 @@ function translateComment(owner, repo, token, note, matchLanguages, minMatchPerc
         // clean markdown annotation
         originComment = (0, markdown_1.cleanAnnotation)(originComment);
         // languages less than than minMatchPercent
-        if (!(0, translate_1.containsLanguages)(originComment, matchLanguages, minMatchPercent)) {
+        const lanName = (0, translate_1.containsLanguageName)(originComment, matchLanguages, minMatchPercent);
+        if (lanName === null) {
             return;
         }
-        const targetComment = yield (0, translate_1.translate2English)(originComment);
+        const targetComment = yield (0, translate_1.translate2English)(originComment, lanName);
         core.info(`translate issues comment: ${targetComment}`);
         // avoid infinite loops
         if (targetComment === originComment) {
@@ -196,11 +197,12 @@ function translateComment(owner, repo, token, note, matchLanguages, minMatchPerc
 }
 function translateTitle(owner, repo, token, matchLanguages, minMatchPercent, issueNumber, originTitle) {
     return __awaiter(this, void 0, void 0, function* () {
+        const lanName = (0, translate_1.containsLanguageName)(originTitle, matchLanguages, minMatchPercent);
         // dose not have languages
-        if (!(0, translate_1.containsLanguages)(originTitle, matchLanguages, minMatchPercent)) {
+        if (lanName === null) {
             return;
         }
-        const targetTitle = yield (0, translate_1.translate2English)(originTitle);
+        const targetTitle = yield (0, translate_1.translate2English)(originTitle, lanName);
         core.info(`translate issues title: ${targetTitle}`);
         // avoid infinite loops
         if (targetTitle === originTitle) {
@@ -460,15 +462,50 @@ exports.expressions = {
 
 /***/ }),
 
+/***/ 6926:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.lanGoogleMap = void 0;
+// https://cloud.google.com/translate/docs/languages
+exports.lanGoogleMap = {
+    cmn: 'zh',
+    spa: 'es',
+    eng: 'en',
+    rus: 'ru',
+    arb: 'ar',
+    ben: 'bn',
+    hin: 'hi',
+    por: 'pt',
+    ind: 'id',
+    jpn: 'ja',
+    fra: 'fr',
+    deu: 'de',
+    jav: 'jv',
+    kor: 'ko',
+    tel: 'te',
+    vie: 'vi',
+    mar: 'mr',
+    ita: 'it',
+    tam: 'ta',
+    tur: 'tr'
+};
+
+
+/***/ }),
+
 /***/ 7751:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.targetLanguage = exports.defaultLanguage = exports.getLanguageExpression = void 0;
+exports.getGoogleFrom = exports.targetLanguage = exports.defaultLanguage = exports.getLanguageExpression = void 0;
 const data_1 = __nccwpck_require__(1116);
 const expression_1 = __nccwpck_require__(2);
+const g_1 = __nccwpck_require__(6926);
 function getLanguageExpression(name) {
     if (expression_1.expressions[name]) {
         return expression_1.expressions[name];
@@ -488,6 +525,10 @@ exports.getLanguageExpression = getLanguageExpression;
 exports.defaultLanguage = 'cmn';
 // cannot include english
 exports.targetLanguage = 'eng';
+function getGoogleFrom(lanName) {
+    return g_1.lanGoogleMap[lanName];
+}
+exports.getGoogleFrom = getGoogleFrom;
 
 
 /***/ }),
@@ -631,7 +672,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.translate2English = exports.containsLanguages = void 0;
+exports.translate2English = exports.containsLanguageName = void 0;
 const core = __importStar(__nccwpck_require__(3052));
 const language_1 = __nccwpck_require__(7751);
 const google_translate_api_1 = __importDefault(__nccwpck_require__(948));
@@ -649,9 +690,9 @@ function getOccurrenceCount(value, expression) {
  * @return {boolean}
  *   contains chinese.
  */
-function containsLanguages(value, matchLanguages, percent) {
+function containsLanguageName(value, matchLanguages, percent) {
     if (value === null) {
-        return false;
+        return null;
     }
     // english match count
     const enExpr = (0, language_1.getLanguageExpression)(language_1.targetLanguage);
@@ -663,7 +704,7 @@ function containsLanguages(value, matchLanguages, percent) {
             const count = getOccurrenceCount(value, expr);
             const lanPercent = enCount == 0 && count == 0 ? 0 : count / (enCount + count);
             if (lanPercent > percent) {
-                return true;
+                return name;
             }
             if (lanPercent > 0) {
                 core.info(`clean value is\n${value}`);
@@ -675,15 +716,16 @@ function containsLanguages(value, matchLanguages, percent) {
             core.setFailed(`contains languages not support ${name}`);
         }
     }
-    return false;
+    return null;
 }
-exports.containsLanguages = containsLanguages;
-function translate2English(body) {
+exports.containsLanguageName = containsLanguageName;
+function translate2English(body, lanName) {
     return __awaiter(this, void 0, void 0, function* () {
         if (body === null) {
             return '';
         }
-        const res = yield (0, google_translate_api_1.default)(body, { to: 'en' });
+        const from = (0, language_1.getGoogleFrom)(lanName);
+        const res = yield (0, google_translate_api_1.default)(body, { from, to: 'en' });
         return res.text;
     });
 }

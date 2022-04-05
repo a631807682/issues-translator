@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {getLanguageExpression, targetLanguage} from './language'
+import {getLanguageExpression, targetLanguage, getGoogleFrom} from './language'
 import translate from '@tomsun28/google-translate-api'
 
 function getOccurrenceCount(value: string, expression: RegExp): number {
@@ -17,13 +17,13 @@ function getOccurrenceCount(value: string, expression: RegExp): number {
  * @return {boolean}
  *   contains chinese.
  */
-export function containsLanguages(
+export function containsLanguageName(
   value: string | null,
   matchLanguages: string[],
   percent: number
-): boolean {
+): string | null {
   if (value === null) {
-    return false
+    return null
   }
   // english match count
   const enExpr = getLanguageExpression(targetLanguage)
@@ -38,7 +38,7 @@ export function containsLanguages(
         enCount == 0 && count == 0 ? 0 : count / (enCount + count)
 
       if (lanPercent > percent) {
-        return true
+        return name
       }
 
       if (lanPercent > 0) {
@@ -53,14 +53,18 @@ export function containsLanguages(
     }
   }
 
-  return false
+  return null
 }
 
-export async function translate2English(body: string | null): Promise<string> {
+export async function translate2English(
+  body: string | null,
+  lanName: string
+): Promise<string> {
   if (body === null) {
     return ''
   }
 
-  const res = await translate(body, {to: 'en'})
+  const from = getGoogleFrom(lanName)
+  const res = await translate(body, {from, to: 'en'})
   return res.text
 }

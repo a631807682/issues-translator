@@ -176,7 +176,7 @@ function translateComment(owner, repo, token, note, matchLanguages, minMatchPerc
             return;
         }
         const targetComment = yield (0, translate_1.translate2English)(originComment);
-        core.info(`translate issues comment: ${targetComment} origin: ${originComment}`);
+        core.info(`translate issues comment: ${targetComment}`);
         // avoid infinite loops
         if (targetComment === originComment) {
             core.warning(`translate origin target is the same`);
@@ -201,7 +201,7 @@ function translateTitle(owner, repo, token, matchLanguages, minMatchPercent, iss
             return;
         }
         const targetTitle = yield (0, translate_1.translate2English)(originTitle);
-        core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`);
+        core.info(`translate issues title: ${targetTitle}`);
         // avoid infinite loops
         if (targetTitle === originTitle) {
             core.warning(`translate origin target is the same`);

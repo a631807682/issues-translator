@@ -83,9 +83,7 @@ async function translateComment(
   }
 
   const targetComment = await translate2English(originComment)
-  core.info(
-    `translate issues comment: ${targetComment} origin: ${originComment}`
-  )
+  core.info(`translate issues comment: ${targetComment}`)
 
   // avoid infinite loops
   if (targetComment === originComment) {
@@ -122,7 +120,7 @@ async function translateTitle(
   }
 
   const targetTitle = await translate2English(originTitle)
-  core.info(`translate issues title: ${targetTitle} origin: ${originTitle}`)
+  core.info(`translate issues title: ${targetTitle}`)
   // avoid infinite loops
   if (targetTitle === originTitle) {
     core.warning(`translate origin target is the same`)

@@ -23,11 +23,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: a631807682/issues-translator@v1.2.0
+      - uses: a631807682/issues-translator@v1.2.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           match-languages: cmn,rus
-          min-match-percent: 0.05
+          min-match-percent: 0
           modify-title: true
           modify-body: true
           modify-comment: true
@@ -35,7 +35,7 @@ jobs:
 ```
 
 1. `match-languages` Match languages which will be translate. [Support language](Language.md). default is `cmn`.
-2. `min-match-percent` The percent of match languages needs to be greater than this percent, range is [0 ~ 1). default is `0.05`, seems small with 5% Google api cannot translate by auto.
+2. `min-match-percent` The percent of match languages needs to be greater than this percent, range is [0 ~ 1). default is `0`.
 3. `modify-title` Should modify issues title. default is `false`.
 4. `modify-body` Should create comment to translate issues body. default is `false`.
 5. `modify-comment` Should create comment to translate issues comment. default is `false`.

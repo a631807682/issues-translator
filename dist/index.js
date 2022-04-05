@@ -50,7 +50,7 @@ function getOption() {
         CommentNote: core.getInput('comment-note'),
         GithubToken: core.getInput('github-token', { required: true }),
         MatchLanguages: [],
-        MinMatchPercent: 0.05
+        MinMatchPercent: 0
     };
     const matchLanguages = core.getInput('match-languages');
     if (matchLanguages === '') {

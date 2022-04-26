@@ -11,7 +11,7 @@ test('contains language', async () => {
 
   expect(containsLanguageName(cn, ['cmn'], 0)).toEqual('cmn')
   expect(containsLanguageName(cn, ['jpn'], 0)).toEqual('jpn')
-  expect(containsLanguageName(rus, ['cnm', 'rus'], 0)).toEqual('rus')
+  expect(containsLanguageName(rus, ['cmn', 'rus'], 0)).toEqual('rus')
 
   expect(containsLanguageName(rus, ['cmn'], 0)).toEqual(null)
   expect(containsLanguageName(cn, ['rus'], 0)).toEqual(null)

@@ -3,11 +3,11 @@ name: auto-merge
 on:
   pull_request:
 
+permissions: write-all
+
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
-    permissions:
-       repository-projects: write
     steps:
       - uses: actions/checkout@v2
       - uses: ahmadnassri/action-dependabot-auto-merge@v2
